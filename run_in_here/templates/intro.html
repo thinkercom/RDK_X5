@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧农业 - 智能种植管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e5f7e1 0%, #d8f3dc 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="none" stroke="%234CAF50" stroke-width="0.5" stroke-opacity="0.2" x="0" y="0" width="100" height="100"/></svg>');
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 顶部导航栏 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+            margin-bottom: 50px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: #2e7d32;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #388e3c;
+            font-weight: 500;
+            font-size: 18px;
+            transition: color 0.3s;
+            position: relative;
+            padding-bottom: 5px;
+        }
+        
+        nav a:hover {
+            color: #2e7d32;
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #2e7d32;
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        /* 主内容区域 */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 0;
+        }
+        
+        .hero-content {
+            max-width: 700px;
+            margin-bottom: 50px;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #2e7d32;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        
+        .hero h1 span {
+            color: #388e3c;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .hero h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 4px;
+            background: linear-gradient(to right, #8bc34a, #4CAF50);
+            border-radius: 3px;
+        }
+        
+        .hero p {
+            font-size: 1.4rem;
+            color: #4a4a4a;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .start-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+            color: white;
+            padding: 18px 45px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(46, 125, 50, 0.4);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.5);
+            background: linear-gradient(135deg, #2e7d32 0%, #4CAF50 100%);
+        }
+        
+        .start-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+        
+        .start-btn:hover::after {
+            left: 100%;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 80px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            transition: all 0.3s ease;
+            border-top: 4px solid #8bc34a;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card i {
+            font-size: 45px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 22px;
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        /* 底部样式 */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 60px;
+            border-top: 1px solid rgba(76, 175, 80, 0.3);
+            color: #666;
+            font-size: 16px;
+        }
+        
+        footer p {
+            margin: 5px 0;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .footer-links a {
+            color: #4CAF50;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #2e7d32;
+            text-decoration: underline;
+        }
+        
+        /* 动画效果 */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating-icons {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.2;
+            font-size: 36px;
+            color: #4CAF50;
+        }
+        
+        .icon-1 { top: 15%; left: 5%; animation: float 7s infinite ease-in-out; }
+        .icon-2 { top: 25%; right: 7%; animation: float 6s infinite ease-in-out 1s; }
+        .icon-3 { top: 65%; left: 8%; animation: float 8s infinite ease-in-out 0.5s; }
+        .icon-4 { top: 70%; right: 10%; animation: float 5s infinite ease-in-out; }
+        .icon-5 { top: 45%; right: 20%; animation: float 9s infinite ease-in-out 1.5s; }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                gap: 15px;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .start-btn {
+                padding: 15px 35px;
+                font-size: 1.2rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-icons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 浮动农业图标装饰 -->
+    <i class="floating-icons icon-1 fas fa-seedling"></i>
+    <i class="floating-icons icon-2 fas fa-tractor"></i>
+    <i class="floating-icons icon-3 fas fa-cloud-sun-rain"></i>
+    <i class="floating-icons icon-4 fas fa-leaf"></i>
+    <i class="floating-icons icon-5 fas fa-water"></i>
+    
+    <div class="container">
+        <!-- 顶部导航 -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                <span>智慧农业平台</span>
+            </div>
+            <nav>
+                <ul>
+                     <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> 首页</a></li>
+                    <li><a href="{{ url_for('about') }}" class="active"><i class="fas fa-info-circle"></i> 关于系统</a></li>
+                    <li><a href="{{ url_for('start') }}"><i class="fas fa-cogs"></i> 进入系统</a></li>
+                    
+                </ul>
+            </nav>
+        </header>
+        
+        <!-- 主内容区 -->
+        <main>
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>智慧农业 <span>智能农业巡检系统</span></h1>
+                    <p>利用物联网与人工智能技术，实现农业的精细化管理、高效生产和可持续发展，引领农业新时代</p>
+                </div>
+                
+                <!-- 替换链接为开始按钮 -->
+                <a href="{{ url_for('start') }}" class="start-btn">
+                    <i class="fas fa-play-circle"></i> 开始使用系统
+                </a>
+                
+                <!-- 功能特点 -->
+                <div class="features">
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-robot"></i>
+                        <h3>智能水肥管理</h3>
+                        <p>基于AI算法进行水肥精准调配，减少资源浪费，提高作物产量与品质</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-brain"></i>
+                        <h3>病虫害预警</h3>
+                        <p>AI视觉识别系统提前预警病虫害，提供针对性解决方案，减少农药使用</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>数据分析决策</h3>
+                        <p>多维度种植数据分析，科学规划种植方案，为农业决策提供数据支持</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- 底部信息 -->
+        <footer>
+            <p>智慧农业平台 </p>
+            
+        </footer>
+    </div>
+
+    <script>
+        // 添加按钮点击动画效果
+        document.querySelector('.start-btn').addEventListener('click', function(e) {
+            // 如果不需要实际页面跳转的演示效果，可以阻止默认行为
+            // e.preventDefault();
+            
+            // 添加点击效果
+            this.classList.add('clicked');
+            setTimeout(() => {
+                this.classList.remove('clicked');
+            }, 300);
+        });
+        
+        // 页面滚动动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const featureCards = document.querySelectorAll('.feature-card');
+            
+            // 初始卡片动画
+            featureCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = "1";
+                    card.style.transform = "translateY(0)";
+                }, 300 * index);
+            });
+            
+            // 按钮悬浮特效
+            const startBtn = document.querySelector('.start-btn');
+            startBtn.addEventListener('mouseenter', function() {
+                this.querySelector('i').style.transform = "rotate(90deg)";
+            });
+            
+            startBtn.addEventListener('mouseleave', function() {
+                this.querySelector('i').style.transform = "rotate(0deg)";
+            });
+        });
+    </script>
+</body>
+</html>

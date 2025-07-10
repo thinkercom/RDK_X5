@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧农业巡检系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e5f7e1 0%, #d8f3dc 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* 顶部导航栏 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: #2e7d32;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #388e3c;
+            font-weight: 500;
+            font-size: 18px;
+            transition: color 0.3s;
+            position: relative;
+            padding-bottom: 5px;
+        }
+        
+        nav a:hover {
+            color: #2e7d32;
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #2e7d32;
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        /* 登出按钮样式 */
+        .logout-container {
+            display: flex;
+            align-items: center;
+            margin-left: auto; 
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            color: #388e3c;
+            border: 1px solid #388e3c;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(56, 142, 60, 0.2);
+            text-decoration: none;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(76, 175, 80, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(56, 142, 60, 0.3);
+            color: #2e7d32;
+        }
+        
+        .logout-btn i {
+            margin-right: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .logout-btn:hover i {
+            transform: rotate(90deg);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-top: 10px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            color: #2e7d32;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 800;
+            position: relative;
+        }
+        
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, #8bc34a, #4CAF50);
+            border-radius: 3px;
+        }
+        
+        .subtitle {
+            color: #4a4a4a;
+            font-size: 1.1rem;
+            margin-top: 25px;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+        
+        /* 视频区域 */
+        .video-section {
+            flex: 3;
+        }
+        
+        .control-section {
+            flex: 1;
+            min-width: 320px;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 480px;
+            margin: 0 auto;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            background: #fff;
+        }
+        
+        #video-stream {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(76, 175, 80, 0.2);
+            color: #2e7d32;
+        }
+        
+        .camera-info {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stats {
+            background: rgba(76, 175, 80, 0.1);
+            padding: 5px 12px;
+            border-radius: 16px;
+            color: #2e7d32;
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .stats-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .video-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #2e7d32;
+            border-radius: 16px;
+            z-index: 10;
+            font-size: 0.9rem;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+        
+        .camera-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            color: #2e7d32;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+        
+        .control-btn:hover {
+            transform: scale(1.1);
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        /* 控制面板 */
+        .control-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2e7d32;
+            position: relative;
+        }
+        
+        .panel-header h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: rgba(139, 195, 74, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #388e3c;
+        }
+        
+        .control-item:hover {
+            background: rgba(76, 175, 80, 0.2);
+            transform: translateY(-3px);
+            border-color: #4CAF50;
+            color: #2e7d32;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+        }
+        
+        .control-item i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #4CAF50;
+        }
+        
+        .slider-container {
+            margin: 25px 0;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #4a4a4a;
+            font-size: 0.9rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(76, 175, 80, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-switch {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(46, 125, 50, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-switch:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.4);
+            background: linear-gradient(135deg, #2e7d32 0%, #4CAF50 100%);
+        }
+        
+        .btn-switch:active {
+            transform: translateY(1极客px);
+        }
+        
+        .btn-switch::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+        
+        .btn-switch:hover::before {
+            left: 100%;
+        }
+        
+        .system-status {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(76, 175, 80, 0.2);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .status-item {
+            background: rgba(139, 195, 74, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .status-label {
+            font-size: 0.85rem;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0.5; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .video-container {
+            animation: fadeIn 0.5s;
+        }
+        
+        .fps-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #2e7d32;
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            z-index: 10;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                gap: 15px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .btn-switch {
+                padding: 12px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                <span>智慧农业平台</span>
+            </div>
+            <div class="logout-container">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>退出系统</span>
+                </a>
+            </div>
+        </header>
+        
+        <div class="header">
+            <h1 class="title">农业巡检视觉控制系统</h1>
+            <p class="subtitle">双摄像头支持 · 实时监控 · 智能分析</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="video-section">
+                <div class="video-wrapper">
+                    <div class="video-container">
+                        <!-- 视频流将在这里显示 -->
+                        <img id="video-stream" src="{{ url_for('video_feed') }}">
+                        <div class="video-info" id="video-info">物体检测中...</div>
+                        
+                        <div class="camera-controls">
+                            <button class="control-btn" title="全屏" onclick="toggleFullscreen()">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="video-overlay">
+                            <div class="camera-info">
+                                <span><i class="fas fa-video"></i> 摄像头 <span id="camera-index">1</span></span>
+                            </div>
+                            <div class="stats">
+                                <div class="stats-item">
+                                    <i class="fas fa-eye"></i>
+                                    <span>检测中</span>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-switch" onclick="switchCamera()">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>切换摄像头</span>
+                </button>
+            </div>
+            
+            <div class="control-section">
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <h2>控制面板</h2>
+                    </div>
+                    
+                    <div class="controls-grid">
+                        <div class="control-item" onclick="toggleNightMode()">
+                            <i class="fas fa-moon"></i>
+                            <span>夜间模式</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span><i class="fas fa-sun"></i> 亮度</span>
+                            <span id="brightness-value">65%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="65" class="slider" id="brightness">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span><i class="fas fa-adjust"></i> 对比度</span>
+                            <span id="contrast-value">50%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="contrast">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span><i class="fas fa-search"></i> 缩放</span>
+                            <span id="zoom-value">100%</span>
+                        </div>
+                        <input type="range" min="100" max="300" value="100" class="slider" id="zoom">
+                    </div>
+                    
+                    <div class="system-status">
+                        <div class="status-grid">
+                            <div class="status-item">
+                                <div class="status-label">当前摄像头</div>
+                                <div class="status-value" id="camera-name">摄像头1</div>
+                            </div>
+                            
+                            <div class="status-item">
+                                <div class="status-label">当前时间</div>
+                                <div class="status-value" id="uptime">00:00:00</div>
+                            </div>
+                            
+                            
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新实时时间
+        function updateTime() {
+            const now = new Date();
+            
+            // 更新时间显示
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('uptime').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        
+        // 初始化时间
+        updateTime();
+        
+        // 每秒更新时间
+        setInterval(updateTime, 1000);
+        
+        function switchCamera() {
+            const btn = document.querySelector('.btn-switch');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 切换中...';
+            btn.disabled = true;
+            fetch("/switch_camera", { method: "POST" })
+                .then(response => {
+                    if (response.ok) {
+                        // 添加切换动画
+                        const videoContainer = document.querySelector('.video-container');
+                        videoContainer.style.animation = 'none';
+                        void videoContainer.offsetWidth; // 触发重绘
+                        videoContainer.style.animation = 'fadeIn 0.5s';
+                        document.getElementById('camera-index').textContent = newIndex;
+                        document.getElementById('camera-name').textContent = newIndex === 1 ? "摄像头1" : "摄像头2";
+                        // 强制刷新视频流
+                        const img = document.getElementById("video-stream");
+                        img.src = "{{ url_for('video_feed') }}" + "?t=" + new Date().getTime();
+                    }
+                })
+                .catch(err => console.error("切换失败:", err))
+                .finally(() => {
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = '<span>切换摄像头</span>';
+                    }, 1000);
+                });
+            
+            // 实际实现中将替换为AJAX调用
+            setTimeout(() => {
+                const currentIndex = parseInt(document.getElementById('camera-index').textContent);
+                const newIndex = currentIndex === 1 ? 2 : 1;
+                
+                document.getElementById('camera-index').textContent = newIndex;
+                document.getElementById('camera-name').textContent = newIndex === 1 ? "摄像头1" : "摄像头2";
+                
+                // 显示通知
+                const notification = document.getElementById('video-info');
+                notification.textContent = `已切换到摄像头 ${newIndex}`;
+                setTimeout(() => {
+                    notification.textContent = "物体检测中...";
+                }, 2000);
+                
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }, 1000);
+        }
+        // 摄像头切换功能
+        
+        
+        
+        // 夜间模式切换
+        function toggleNightMode() {
+            const body = document.body;
+            if (body.classList.contains('night-mode')) {
+                body.classList.remove('night-mode');
+                document.getElementById('video-info').textContent = "夜间模式已关闭";
+            } else {
+                body.classList.add('night-mode');
+                document.getElementById('video-info').textContent = "夜间模式已开启";
+            }
+            setTimeout(() => {
+                document.getElementById('video-info').textContent = "物体检测中...";
+            }, 2000);
+        }
+        
+        // 全屏模式
+        function toggleFullscreen() {
+            const elem = document.querySelector('.video-container');
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) { /* Safari */
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { /* IE11 */
+                    document.msExitFullscreen();
+                }
+            }
+        }
+        
+        // 亮度滑块控制
+        const brightnessSlider = document.getElementById('brightness');
+        const brightnessValue = document.getElementById('brightness-value');
+        brightnessSlider.addEventListener('input', function() {
+            brightnessValue.textContent = `${this.value}%`;
+            document.getElementById('video-stream').style.filter = `brightness(${this.value/100 + 0.5})`;
+        });
+        
+        // 对比度滑块控制
+        const contrastSlider = document.getElementById('contrast');
+        const contrastValue = document.getElementById('contrast-value');
+        contrastSlider.addEventListener('input', function() {
+            contrastValue.textContent = `${this.value}%`;
+            document.getElementById('video-stream').style.filter += ` contrast(${this.value/50 + 1})`;
+        });
+        
+        // 缩放滑块控制
+        const zoomSlider = document.getElementById('zoom');
+        const zoomValue = document.getElementById('zoom-value');
+        zoomSlider.addEventListener('input', function() {
+            zoomValue.textContent = `${this.value}%`;
+            document.getElementById('video-stream').style.transform = `scale(${this.value/100})`;
+        });
+        
+        // 登出按钮悬停效果
+        document.querySelector('.logout-btn').addEventListener('mouseenter', function() {
+            this.querySelector('i').style.transform = 'rotate(15deg)';
+        });
+        
+        document.querySelector('.logout-btn').addEventListener('mouseleave', function() {
+            this.querySelector('i').style.transform = 'rotate(0)';
+        });
+        
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0.5; transform: scale(0.95); }
+                to { opacity: 1; transform: scale(1); }
+            }
+            .video-container {
+                animation: fadeIn 0.5s;
+            }
+            .night-mode {
+                filter: invert(1) hue-rotate(180deg) contrast(0.8);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

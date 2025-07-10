@@ -1,0 +1,9 @@
+# Flask: Web后端框架，负责路由、页面渲染、API等
+flask
+
+# OpenCV: 计算机视觉库，用于摄像头图像采集与处理
+opencv-python
+
+# numpy: 科学计算库，图像/数据处理常用
+numpy
+

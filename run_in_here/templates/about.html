@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于系统 - 智慧农业平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e5f7e1 0%, #d8f3dc 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="none" stroke="%234CAF50" stroke-width="0.5" stroke-opacity="0.2" x="0" y="0" width="100" height="100"/></svg>');
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 顶部导航栏 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+            margin-bottom: 50px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: #2e7d32;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #388e3c;
+            font-weight: 500;
+            font-size: 18px;
+            transition: color 0.3s;
+            position: relative;
+            padding-bottom: 5px;
+        }
+        
+        nav a:hover {
+            color: #2e7d32;
+        }
+        
+        nav a.active {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2e7d32;
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #2e7d32;
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        /* 主内容区域 */
+        .about-section {
+            padding: 60px 0;
+        }
+        
+        .section-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .about-section h1 {
+            font-size: 2.8rem;
+            color: #2e7d32;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .about-section h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, #8bc34a, #4CAF50);
+            border-radius: 3px;
+        }
+        
+        .about-section h2 {
+            font-size: 2rem;
+            color: #2e7d32;
+            margin: 40px 0 20px;
+            text-align: left;
+        }
+        
+        .about-section p {
+            font-size: 1.2rem;
+            color: #4a4a4a;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            text-align: left;
+        }
+        
+        .about-section ul {
+            text-align: left;
+            margin: 20px 0 30px;
+            padding-left: 20px;
+        }
+        
+        .about-section li {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: #4a4a4a;
+        }
+        
+        .about-section li strong {
+            color: #2e7d32;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            transition: all 0.3s ease;
+            border-top: 4px solid #8bc34a;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card i {
+            font-size: 45px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 22px;
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        /* 底部样式 */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 60px;
+            border-top: 1px solid rgba(76, 175, 80, 0.3);
+            color: #666;
+            font-size: 16px;
+        }
+        
+        footer p {
+            margin: 5px 0;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .footer-links a {
+            color: #4CAF50;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #2e7d32;
+            text-decoration: underline;
+        }
+        
+        /* 动画效果 */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating-icons {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.2;
+            font-size: 36px;
+            color: #4CAF50;
+        }
+        
+        .icon-1 { top: 15%; left: 5%; animation: float 7s infinite ease-in-out; }
+        .icon-2 { top: 25%; right: 7%; animation: float 6s infinite ease-in-out 1s; }
+        .icon-3 { top: 65%; left: 8%; animation: float 8s infinite ease-in-out 0.5s; }
+        .icon-4 { top: 70%; right: 10%; animation: float 5s infinite ease-in-out; }
+        .icon-5 { top: 45%; right: 20%; animation: float 9s infinite ease-in-out 1.5s; }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .about-section h1 {
+                font-size: 2.2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-icons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 浮动农业图标装饰 -->
+    <i class="floating-icons icon-1 fas fa-seedling"></i>
+    <i class="floating-icons icon-2 fas fa-tractor"></i>
+    <i class="floating-icons icon-3 fas fa-cloud-sun-rain"></i>
+    <i class="floating-icons icon-4 fas fa-leaf"></i>
+    <i class="floating-icons icon-5 fas fa-water"></i>
+    
+    <div class="container">
+        <!-- 顶部导航 -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                <span>智慧农业平台</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> 首页</a></li>
+                    <li><a href="{{ url_for('about') }}" class="active"><i class="fas fa-info-circle"></i> 关于系统</a></li>
+                    <li><a href="{{ url_for('start') }}"><i class="fas fa-cogs"></i> 进入系统</a></li>
+                    
+                </ul>
+            </nav>
+        </header>
+        
+        <!-- 关于系统内容区域 -->
+        <main>
+            <section class="about-section">
+                <div class="section-content">
+                    <h1>关于智慧农业平台</h1>
+                    <p>智慧农业平台是一个基于机器人技术和人工智能技术的智能种植管理系统，旨在帮助农民和农业企业提高生产效率、降低资源消耗。</p>
+                    
+                    <h2>我们的使命</h2>
+                    <p>通过技术创新推动农业现代化，实现可持续农业发展。我们致力于为农业生产提供智能化解决方案，帮助农民应对气候变化、资源短缺等挑战。</p>
+                    
+                    <h2>核心价值</h2>
+                    <ul>
+                        <li><strong>资源优化</strong> - 减少水肥浪费，降低生产成本</li>
+                        <li><strong>智能预警</strong> - 提前发现病虫害风险，减少损失</li>
+                        <li><strong>数据驱动</strong> - 基于数据的科学决策支持</li>
+                        <li><strong>可持续发展</strong> - 促进环境友好的农业生产方式</li>
+                    </ul>
+                    
+                    <h2>技术特点</h2>
+                    <p>智慧农业平台采用先进的物联网架构，结合机器人和人工智能技术：</p>
+                    
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="fas fa-satellite"></i>
+                            <h3>巡检机器人</h3>
+                            <p>通过巡检机器人实时监测作物生长状况</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <i class="fas fa-cloud"></i>
+                            <h3>实时数据分析</h3>
+                            <p>所有数据在检测时实时分析，生成检测报告</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <i class="fas fa-brain"></i>
+                            <h3>AI分析引擎</h3>
+                            <p>深度学习算法预测病虫害并提供解决方案</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <i class="fas fa-mobile-alt"></i>
+                            <h3>移动应用</h3>
+                            <p>随时随地通过网页监控和管理农业生产</p>
+                        </div>
+                    </div>
+                    
+                   
+                </div>
+            </section>
+        </main>
+        
+        <!-- 底部信息 -->
+        <footer>
+            <p>智慧农业平台 </p>
+            
+        </footer>
+    </div>
+
+    <script>
+        // 添加页面滚动效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 动画效果
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = "1";
+                    card.style.transform = "translateY(0)";
+                }, 300 * index);
+            });
+            
+            // 设置当前活动菜单项
+            document.querySelectorAll('nav a').forEach(link => {
+                if(link.href === window.location.href) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
