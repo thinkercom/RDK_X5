@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI视觉控制系统</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+            letter-spacing: 2px;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            width: 640px;
+            height: 480px;
+            margin: 0 auto;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            border: 2px solid #00ffff;
+        }
+        
+        #video-stream {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 修改为contain保持原始比例 */
+            background-color: #000; /* 视频未加载时的背景 */
+        }
+        
+        /* 新增：视频信息显示区域 */
+        .video-info {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-family: Arial, sans-serif;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .btn-switch {
+            margin-top: 2rem;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(45deg, #00ffff, #0088ff);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-switch:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+        }
+        
+        .btn-switch:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-switch::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+        
+        .btn-switch:hover::before {
+            left: 100%;
+        }
+        
+        .corner {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 2px solid #00ffff;
+            opacity: 0.7;
+        }
+        
+        .corner-tl {
+            top: 0;
+            left: 0;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 10px 0 0 0;
+        }
+        
+        .corner-tr {
+            top: 0;
+            right: 0;
+            border-left: none;
+            border-bottom: none;
+            border-radius: 0 10px 0 0;
+        }
+        
+        .corner-bl {
+            bottom: 0;
+            left: 0;
+            border-right: none;
+            border-top: none;
+            border-radius: 0 0 0 10px;
+        }
+        
+        .corner-br {
+            bottom: 0;
+            right: 0;
+            border-left: none;
+            border-top: none;
+            border-radius: 0 0 10px 0;
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(0, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">AI视觉控制系统</h1>
+        
+        <div class="video-wrapper">
+            <div class="video-container">
+                <img id="video-stream" src="{{ url_for('video_feed') }}">
+                <!-- 新增信息显示层 -->
+                <div class="video-info" id="video-info"></div>
+            </div>
+        </div>
+        
+        <button class="btn-switch" onclick="switchCamera()">
+            <span>切换摄像头</span>
+        </button>
+    </div>
+
+    <script>
+        // 获取视频流中的文字信息（通过Canvas）
+        function extractVideoText() {
+            const video = document.getElementById('video-stream');
+            const infoDiv = document.getElementById('video-info');
+            
+            // 创建隐藏的Canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            
+            // 定期捕获帧并提取文字
+            setInterval(() => {
+                if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // 这里可以添加OCR逻辑来提取文字
+                    // 简单示例：假设文字在特定区域
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    // 提取文字逻辑...
+                    
+                    // 临时方案：显示固定提示
+                    infoDiv.innerHTML = "物体检测中...";
+                }
+            }, 200); // 每200ms检查一次
+        }
+        
+        // 当视频流加载后开始提取文字
+        document.getElementById('video-stream').onload = function() {
+            setTimeout(extractVideoText, 1000);
+        };
+        
+        // 切换摄像头
+        function switchCamera() {
+            const btn = document.querySelector('.btn-switch');
+            btn.disabled = true;
+            btn.innerHTML = '<span>切换中...</span>';
+            
+            fetch("/switch_camera", { method: "POST" })
+                .then(response => {
+                    if (response.ok) {
+                        // 添加切换动画
+                        const videoContainer = document.querySelector('.video-container');
+                        videoContainer.style.animation = 'none';
+                        void videoContainer.offsetWidth; // 触发重绘
+                        videoContainer.style.animation = 'fadeIn 0.5s';
+                        
+                        // 强制刷新视频流
+                        const img = document.getElementById("video-stream");
+                        img.src = "{{ url_for('video_feed') }}" + "?t=" + new Date().getTime();
+                    }
+                })
+                .catch(err => console.error("切换失败:", err))
+                .finally(() => {
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = '<span>切换摄像头</span>';
+                    }, 1000);
+                });
+        }
+        
+        // 页面加载完成后创建粒子
+        window.addEventListener('load', createParticles);
+        
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0.5; transform: scale(0.95); }
+                to { opacity: 1; transform: scale(1); }
+            }
+            .video-container {
+                animation: fadeIn 0.5s;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

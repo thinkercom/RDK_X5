@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dual Camera Stream</title>
+    <meta http-equiv="refresh" content="1"> 每1秒刷新画面
+</head>
+<body>
+    <h1>Camera 0</h1>
+    <img src="{{ url_for('video_feed0') }}" width="640" height="480">
+    <h1>Camera 1</h1>
+    <img src="{{ url_for('video_feed1') }}" width="640" height="480">
+</body>
+</html>
